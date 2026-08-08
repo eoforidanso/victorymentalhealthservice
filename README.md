@@ -40,9 +40,9 @@ Page structure: Hero → Why Us → Services → Our Team → Insurance → Cont
 
 ## Staff photos
 
-Team cards reference `img/idayatu-omoniyi.jpg`, `img/johnny-white.jpg`, and
-`img/shannan-merritt.jpg`. Any missing photo degrades to a gold monogram of
-the person's initials, so the page renders cleanly with or without them.
+Team cards reference `img/idayatu-omoniyi.jpg` and `img/shannan-merritt.jpg`.
+Any missing photo degrades to a gold monogram of the person's initials, so the
+page renders cleanly with or without them.
 
 ## Accessibility & SEO
 
@@ -53,7 +53,7 @@ the person's initials, so the page renders cleanly with or without them.
 
 ## Before launch
 
-- [ ] Add the three staff headshots to `img/`
+- [ ] Add the remaining staff headshot (`shannan-merritt.jpg`) to `img/`
 - [ ] Confirm the accepted-insurance list is current
 - [ ] Verify the Tebra scheduling link
 - [ ] Add Privacy Policy and Terms pages

@@ -277,6 +277,11 @@ img, svg { max-width: 100%; display: block; }
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
 
 /* Pillars (About) */
 .pillar {
@@ -604,7 +609,7 @@ img, svg { max-width: 100%; display: block; }
 
   .header__actions .btn--primary { display: none; }
 
-  .grid-4, .grid-3 { grid-template-columns: 1fr; }
+  .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
   .contact-list { grid-template-columns: 1fr; }
   .contact__grid { gap: 36px; }
   .section { padding: 64px 0; }
