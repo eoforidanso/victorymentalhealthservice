@@ -53,7 +53,7 @@ page renders cleanly with or without them.
 
 ## Before launch
 
-- [ ] Add the remaining staff headshot (`shannan-merritt.jpg`) to `img/`
+- [x] Add the remaining staff headshot (`shannan-merritt.jpg`) to `img/`
 - [ ] Confirm the accepted-insurance list is current
 - [ ] Verify the Tebra scheduling link
 - [ ] Add Privacy Policy and Terms pages
