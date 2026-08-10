@@ -355,7 +355,7 @@ img, svg { max-width: 100%; display: block; }
   position: relative;
   width: 120px;
   height: 120px;
-  border-radius: 50%;
+  border-radius: var(--radius);
   overflow: hidden;
   background: var(--indigo-700);
   flex-shrink: 0;
