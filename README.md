@@ -1,6 +1,6 @@
-# Victory Mental Health Services
+# Victory Mental Services
 
-Marketing site for **Victory Mental Health Services** — outpatient psychiatric
+Marketing site for **Victory Mental Services** — outpatient psychiatric
 care, medication management, and holistic counseling in Tinley Park, IL,
 offered in person and via telehealth.
 
@@ -23,6 +23,28 @@ Open `index.html` directly, or serve the folder:
 ```bash
 python3 -m http.server 8000
 ```
+
+## Deployment
+
+Cloudflare Pages, project `victory-mental-health`, in the
+`victorymentalservs@yahoo.com` account. There is no build step — the repo root
+is the deployable artifact.
+
+```bash
+npx wrangler pages deploy . --project-name=victory-mental-health --branch=main
+```
+
+Any `--branch` other than `main` publishes a preview at
+`<branch>.victory-mental-health-44f.pages.dev`, leaving production untouched.
+
+Custom domains `victorymentalservices.com` and `www` are attached to the
+project. Their DNS records are **proxied** CNAMEs to
+`victory-mental-health-44f.pages.dev` — the orange cloud is required, since
+Pages only answers requests that pass through Cloudflare's proxy.
+
+Note: `index.html` is served with two mailto links rewritten to
+`/cdn-cgi/l/email-protection` by Cloudflare's Email Address Obfuscation. That
+is expected, not a build artifact.
 
 ## Design
 
@@ -54,7 +76,18 @@ page renders cleanly with or without them.
 ## Before launch
 
 - [x] Add the remaining staff headshot (`shannan-merritt.jpg`) to `img/`
+- [x] Point the domain at the host and enable HTTPS
 - [ ] Confirm the accepted-insurance list is current
 - [ ] Verify the Tebra scheduling link
 - [ ] Add Privacy Policy and Terms pages
-- [ ] Point the domain at the host and enable HTTPS
+- [ ] Replace Ola's headshot with a studio portrait — the current file is an
+      upscaled phone crop with a composited background; it cannot match
+      Shannan's framing because the source has no shoulders in it
+- [ ] Remove `<meta name="robots" content="noindex, nofollow">` from
+      `index.html` — this is the go-live switch
+- [ ] Redirect the apex to `www` (Cloudflare Redirect Rule); both currently
+      serve the site, and the canonical/JSON-LD both name `www`
+- [ ] Retire or redirect `victorymentalservs.com`, which still serves the old
+      site. Note its Google Workspace MX still hosts the working
+      `info@victorymentalservs.com` mailbox referenced on the contact page —
+      moving the domain means moving mail

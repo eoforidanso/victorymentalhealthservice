@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Victory Mental Health Services — Design tokens & base
+   Victory Mental Services — Design tokens & base
    ========================================================================== */
 :root {
   --indigo-900: #211c4d;
@@ -563,7 +563,14 @@ img, svg { max-width: 100%; display: block; }
 }
 .footer__links { display: flex; gap: 20px; flex-wrap: wrap; font-size: 14px; }
 .footer__links a:hover { color: var(--gold); }
-.footer__copy { font-size: 13px; margin: 0; width: 100%; text-align: center; opacity: 0.6; }
+/* Explicit colour: the global `p { color: var(--ink-soft) }` rule beats the
+   footer's inherited cream, leaving both lines dark-on-dark and unreadable. */
+.footer__copy { font-size: 13px; margin: 0; width: 100%; text-align: center; color: var(--cream); opacity: 0.6; }
+/* 0.55 is the floor here: at 12px this needs 4.5:1 against --indigo-900,
+   and 0.45 measured 3.98:1. Keeps it quieter than the copyright above. */
+.footer__credit { font-size: 12px; margin: -6px 0 0; width: 100%; text-align: center; color: var(--cream); opacity: 0.55; }
+.footer__credit a { border-bottom: 1px solid rgba(247,244,239,0.25); }
+.footer__credit a:hover { color: var(--gold); border-bottom-color: var(--gold); }
 
 /* Back to top */
 .back-to-top {
@@ -670,6 +677,17 @@ img, svg { max-width: 100%; display: block; }
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
   .contact-list { grid-template-columns: 1fr; }
   .contact__grid { gap: 36px; }
+
+  /* Stacked into one column, a left-aligned block of four short labels reads
+     as ragged. Centre the intro column only — the hours table beside it keeps
+     its alignment, since centring tabular rows would break the day/time pairing. */
+  .contact__intro { text-align: center; }
+  .contact-list { justify-items: center; }
+
+  /* Phone and Email are links and carry the 44px tap-target minimum; Address
+     and Fax are plain text. Stacked and centred, that made every other row sit
+     lower than its label. Give all four the same box so the rhythm is even. */
+  .contact-list dd { display: grid; place-items: center; min-height: 44px; }
   .section { padding: 64px 0; }
   .section__head { margin-bottom: 32px; }
   .hero { padding: 56px 0 52px; }
@@ -717,4 +735,268 @@ img, svg { max-width: 100%; display: block; }
   h1 { font-size: 1.95rem; }
   .provider__avatar { width: 80px; height: 80px; }
   .provider__avatar::before { font-size: 24px; }
+}
+
+/* ==========================================================================
+   Material layer — depth, glass, and pointer-tracked 3D
+   --------------------------------------------------------------------------
+   Appended as one block so the original flat design stays intact underneath:
+   delete from here to the end of the file to revert completely.
+
+   Two rules govern everything below, because this is a clinical site:
+   1. Text never sits on a surface below ~72% opacity. Blur is decoration;
+      legibility of the crisis line and contact details is not negotiable.
+   2. Every transform is gated behind prefers-reduced-motion AND pointer:fine.
+   ========================================================================== */
+:root {
+  /* Layered shadows. A single large blur reads as fog; stacking a tight
+     contact shadow under a wide ambient one is what makes an edge feel lifted. */
+  --shadow-1: 0 1px 1px rgba(33,28,77,0.04), 0 2px 4px rgba(33,28,77,0.04);
+  --shadow-2: 0 1px 2px rgba(33,28,77,0.05), 0 4px 10px -2px rgba(33,28,77,0.07),
+              0 12px 24px -6px rgba(33,28,77,0.08);
+  --shadow-3: 0 1px 2px rgba(33,28,77,0.06), 0 8px 18px -4px rgba(33,28,77,0.10),
+              0 24px 48px -12px rgba(33,28,77,0.16);
+  --shadow-4: 0 2px 4px rgba(33,28,77,0.06), 0 14px 28px -6px rgba(33,28,77,0.13),
+              0 40px 72px -16px rgba(33,28,77,0.22);
+
+  /* The 1px inner highlight along a surface's top edge — the single detail
+     that most reads as "physical material" rather than "coloured rectangle". */
+  --specular: inset 0 1px 0 rgba(255,255,255,0.85);
+  --specular-dark: inset 0 1px 0 rgba(255,255,255,0.14);
+
+  --glass-light: rgba(255,255,255,0.74);
+  --glass-tint: rgba(255,255,255,0.58);
+  --glass-dark: rgba(33,28,77,0.62);
+  --blur: saturate(180%) blur(20px);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ---- Ambient depth ------------------------------------------------------
+   Glass needs something behind it or it just looks like flat translucency.
+   These soft colour fields give the blur something to pick up. Pseudo-elements
+   only — no markup changes. */
+.section { position: relative; isolation: isolate; }
+.section::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+  top: -180px;
+  right: -160px;
+  background: radial-gradient(circle, rgba(108,99,201,0.10) 0%, rgba(108,99,201,0.04) 45%, transparent 70%);
+  pointer-events: none;
+}
+.section--tint::before {
+  background: radial-gradient(circle, rgba(201,168,117,0.16) 0%, rgba(201,168,117,0.05) 45%, transparent 70%);
+  left: -200px;
+  right: auto;
+  top: auto;
+  bottom: -220px;
+}
+.section--tint { overflow: hidden; }
+
+/* ---- Header: liquid glass ---------------------------------------------- */
+.site-header {
+  background: rgba(247,244,239,0.72);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  border-bottom: 1px solid rgba(226,221,208,0.7);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 4px 20px -8px rgba(33,28,77,0.10);
+}
+
+/* ---- Surfaces ----------------------------------------------------------- */
+.pillar,
+.card,
+.provider {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.80) 100%);
+  border: 1px solid rgba(255,255,255,0.9);
+  outline: 1px solid rgba(226,221,208,0.55);
+  outline-offset: -1px;
+  box-shadow: var(--shadow-2), var(--specular);
+  transform-style: preserve-3d;
+  will-change: auto;
+}
+
+/* Blur is the expensive part, so it only runs where there is both something
+   behind it and the headroom to composite it: pointer-fine, wider viewports. */
+@media (min-width: 860px) and (pointer: fine) {
+  .pillar, .card, .provider {
+    -webkit-backdrop-filter: var(--blur);
+    backdrop-filter: var(--blur);
+  }
+}
+
+.card__icon,
+.pillar__icon {
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(239,233,222,0.9));
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow: var(--shadow-1), inset 0 1px 0 rgba(255,255,255,0.9);
+  transition: transform 0.4s var(--ease-spring), box-shadow 0.4s var(--ease-out);
+}
+
+/* ---- Pointer-tracked 3D -------------------------------------------------
+   --rx/--ry are written by main.js on pointermove; they stay 0 everywhere the
+   script does not run, so this degrades to a plain lift. */
+@media (prefers-reduced-motion: no-preference) and (pointer: fine) {
+  .pillar, .card, .provider {
+    transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out);
+    transform:
+      perspective(1000px)
+      rotateX(var(--rx, 0deg))
+      rotateY(var(--ry, 0deg))
+      translate3d(0, var(--lift, 0px), 0);
+  }
+  .card:hover, .pillar:hover, .provider:hover {
+    --lift: -6px;
+    box-shadow: var(--shadow-4), var(--specular);
+    transition-duration: 0.18s;
+  }
+  .card:hover .card__icon,
+  .pillar:hover .pillar__icon {
+    transform: translate3d(0, -2px, 40px);
+    box-shadow: var(--shadow-2), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+
+  /* Specular sweep that follows the cursor across the surface. */
+  .card::after, .pillar::after, .provider::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-out);
+    background: radial-gradient(
+      380px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255,255,255,0.55) 0%,
+      rgba(201,168,117,0.10) 35%,
+      transparent 65%
+    );
+  }
+  .card:hover::after, .pillar:hover::after, .provider:hover::after { opacity: 1; }
+}
+
+/* ---- Buttons: dimensional, not flat ------------------------------------- */
+.btn { position: relative; overflow: hidden; }
+.btn--primary {
+  background: linear-gradient(180deg, var(--indigo-600) 0%, var(--indigo-700) 55%, #2a2360 100%);
+  box-shadow: var(--shadow-2), inset 0 1px 0 rgba(255,255,255,0.22);
+}
+.btn--primary:hover {
+  background: linear-gradient(180deg, var(--indigo-700) 0%, var(--indigo-900) 100%);
+  box-shadow: var(--shadow-3), inset 0 1px 0 rgba(255,255,255,0.28);
+  transform: translateY(-2px);
+}
+.btn--gold {
+  background: linear-gradient(180deg, #dcc094 0%, var(--gold) 55%, #b8945f 100%);
+  box-shadow: var(--shadow-2), inset 0 1px 0 rgba(255,255,255,0.55);
+}
+.btn--gold:hover {
+  background: linear-gradient(180deg, #e6cda6 0%, #cfae7c 100%);
+  box-shadow: var(--shadow-3), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.btn--light-ghost {
+  background: rgba(255,255,255,0.10);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-color: rgba(255,255,255,0.35);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
+}
+.btn--light-ghost:hover { background: rgba(255,255,255,0.20); }
+.btn:active { transform: translateY(1px) scale(0.985); }
+
+/* ---- Hero: depth behind the type ---------------------------------------- */
+.hero {
+  background:
+    radial-gradient(900px 520px at 78% 8%, rgba(108,99,201,0.42) 0%, transparent 62%),
+    radial-gradient(700px 460px at 8% 92%, rgba(201,168,117,0.20) 0%, transparent 60%),
+    linear-gradient(165deg, #2a2461 0%, var(--indigo-900) 55%, #1a1640 100%);
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 62%, rgba(26,22,64,0.5) 100%);
+}
+.hero__trust {
+  display: inline-block;
+  background: rgba(255,255,255,0.07);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(201,168,117,0.28);
+  border-radius: 14px;
+  padding: 14px 20px;
+  color: rgba(247,244,239,0.78);
+  box-shadow: var(--specular-dark);
+}
+
+/* ---- Hours card: glass over indigo, contrast preserved ------------------- */
+.hours-card {
+  background:
+    linear-gradient(180deg, rgba(50,42,110,0.92) 0%, rgba(33,28,77,0.95) 100%);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  border: 1px solid rgba(201,168,117,0.22);
+  box-shadow: var(--shadow-4), var(--specular-dark);
+}
+
+/* The crisis note stays deliberately high-contrast — no glass, no blur.
+   This is the one block on the site someone may read in an emergency. */
+.crisis-note {
+  background: rgba(33,28,77,0.55);
+  border: 1px solid rgba(201,168,117,0.35);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+
+/* ---- Back to top: glass pill -------------------------------------------- */
+.back-to-top {
+  background: rgba(50,42,110,0.78);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: var(--shadow-3), var(--specular-dark);
+}
+
+/* ---- Insurance chips ----------------------------------------------------- */
+.insurance-list li {
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+  border: 1px solid rgba(255,255,255,0.85);
+  outline: 1px solid rgba(226,221,208,0.5);
+  outline-offset: -1px;
+  box-shadow: var(--shadow-1), inset 0 1px 0 rgba(255,255,255,0.85);
+  border-radius: var(--radius-sm);
+}
+
+/* ---- Focus: visible on every material ----------------------------------- */
+a:focus-visible, button:focus-visible, .btn:focus-visible {
+  outline: 3px solid var(--indigo-500);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ---- Fallbacks ----------------------------------------------------------
+   Without backdrop-filter the translucent surfaces would sit on whatever is
+   behind them and lose contrast, so they go solid. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .site-header { background: var(--cream); }
+  .pillar, .card, .provider { background: var(--white); }
+  .hero__trust { background: rgba(255,255,255,0.12); }
+  .hours-card { background: var(--indigo-900); }
+  .back-to-top { background: var(--indigo-700); }
+}
+
+/* ---- Reduced motion: depth stays, movement goes ------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .pillar, .card, .provider, .btn, .card__icon, .pillar__icon {
+    transform: none !important;
+    transition: none !important;
+  }
+  .card::after, .pillar::after, .provider::after { display: none; }
 }

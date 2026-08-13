@@ -2,3 +2,6 @@
 Thumbs.db
 *.log
 node_modules/
+
+# wrangler local state (contains account identifiers)
+.wrangler/
